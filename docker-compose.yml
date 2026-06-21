@@ -1,0 +1,12 @@
+services:
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - ./data:/app/data
+    environment:
+      - FLASK_APP=run.py
+      - SECRET_KEY=dev-secret-key
+      - DATABASE_URL=sqlite:////app/data/library.db
