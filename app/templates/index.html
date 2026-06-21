@@ -1,20 +1,81 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Welcome to LibFlow!</h1>
-    <p>Explore our collection of books.</p>
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h1>Book Catalog</h1>
+            <form action="{{ url_for('main.index') }}" method="get" class="row g-3">
+                <div class="col-md-3">
+                    <input type="text" name="search" class="form-control" placeholder="Search by Title" value="{{ search }}">
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="author" class="form-control" placeholder="Search by Author" value="{{ author }}">
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="isbn" class="form-control" placeholder="Search by ISBN" value="{{ isbn }}">
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary w-100">Search</button>
+                </div>
+                
+                <div class="col-md-12">
+                    <button class="btn btn-secondary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#advancedFilters" aria-expanded="false" aria-controls="advancedFilters">
+                        Advanced Filters
+                    </button>
+                    <div class="collapse mt-2" id="advancedFilters">
+                        <div class="card card-body">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <input type="text" name="publisher" class="form-control" placeholder="Publisher" value="{{ publisher }}">
+                                </div>
+                                <div class="col-md-4">
+                                    <input type="number" name="year_start" class="form-control" placeholder="Year From" value="{{ year_start }}">
+                                </div>
+                                <div class="col-md-4">
+                                    <input type="number" name="year_end" class="form-control" placeholder="Year To" value="{{ year_end }}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div class="row">
         {% for book in books %}
-        <div class="col-md-4 mb-3">
-            <div class="card">
-                <div class="card-body">
+        <div class="col-md-3 mb-4">
+            <div class="card h-100">
+                <div class="card-body d-flex flex-column">
                     <h5 class="card-title">{{ book.title }}</h5>
-                    <h6 class="card-subtitle mb-2 text-muted">{{ book.author }}</h6>
-                    <p class="card-text">ISBN: {{ book.isbn }}</p>
-                    <p class="card-text">Available: {{ book.available_copies }} / {{ book.total_copies }}</p>
+                    <h6 class="card-subtitle mb-2 text-muted">by {{ book.author }}</h6>
+                    <p class="card-text small">ISBN: {{ book.isbn }}</p>
+                    <p class="card-text">
+                        <span class="badge {% if book.available_copies > 0 %}bg-success{% else %}bg-danger{% endif %}">
+                            {{ book.available_copies }} / {{ book.total_copies }} available
+                        </span>
+                    </p>
+                    <div class="mt-auto">
+                        <a href="{{ url_for('main.book_detail', isbn=book.isbn) }}" class="btn btn-outline-primary btn-sm w-100">View Details</a>
+                    </div>
                 </div>
             </div>
         </div>
+        {% else %}
+        <div class="col-12">
+            <p>No books found.</p>
+        </div>
         {% endfor %}
     </div>
+
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            <li class="page-item {% if not prev_url %}disabled{% endif %}">
+                <a class="page-link" href="{{ prev_url or '#' }}">Previous</a>
+            </li>
+            <li class="page-item {% if not next_url %}disabled{% endif %}">
+                <a class="page-link" href="{{ next_url or '#' }}">Next</a>
+            </li>
+        </ul>
+    </nav>
 {% endblock %}
